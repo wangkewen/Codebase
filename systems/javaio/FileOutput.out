@@ -1,0 +1,15 @@
+1: import java.io.*;
+2: public class FileOutput {
+3:     static String file = "FileOutput.out";
+4:     public static void main(String[] args) throws IOException {
+5:         BufferedReader br = new BufferedReader(new StringReader(BufferedInputFile.read("FileOutput.java")));
+6:         PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+7:         int line = 1;
+8:         String s;
+9:         while((s = br.readLine()) != null) {
+10:             pw.println(line++ + ": " + s);
+11:         }
+12:         pw.close();
+13:         System.out.println(BufferedInputFile.read(file));
+14:     }
+15: }
