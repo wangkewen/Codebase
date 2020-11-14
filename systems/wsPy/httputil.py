@@ -1,10 +1,12 @@
 class HTTPHeader(dict):
+
     def __init__(self, *args, **kwargs):
         dict.__init__(self)
-        self._list = {}
+        self._as_list = {}
         self.update(*args, **kwargs)
+
     def add(self, name, value):
-        http_name = HTTPHeader._transfer_name(name)
+        http_name = self._transfer_name(name)
         if http_name in self:
             dict.__setitem__(self, http_name, self[http_name] + ',' + value)
             self._as_list[http_name].append(value)
@@ -12,7 +14,7 @@ class HTTPHeader(dict):
             self[http_name] = value
 
     def get_list(self, name):
-        http_name = HTTPHeader._transfer_name(name)
+        http_name = self._transfer_name(name)
         return self._as_list.get(http_name, [])
 
     def get_all(self):
@@ -31,29 +33,30 @@ class HTTPHeader(dict):
                 h.parse_line(line)
         return h 
  
-    def _transfer_name(name):
+    def _transfer_name(self, name):
         return "-".join([word.capitalize() for word in name.split("-")])
 
     def __setitem__(self, name, value):
-        http_name = HTTPHeader._transfer_name(name)
+        http_name = self._transfer_name(name)
         dict.__setitem__(self, http_name, value)
         self._as_list[http_name] = [value]
      
     def __getitem__(self, name):
-        return dict.__getitem__(self, HTTPHeader._transfer_name(name))
+        return dict.__getitem__(self, self._transfer_name(name))
 
     def __delitem__(self, name):
-        http_name = HTTPHeader._transfer_name(name)
+        http_name = self._transfer_name(name)
         dict.__delitem__(self, http_name)
         del self._as_list[http_name]
     
     def get(self, name, default=None):
-        return dict.get(self, HTTPHeader._transfer_name(name), default)
+        return dict.get(self, self._transfer_name(name), default)
 
     def update(self, *args, **kwargs):
         for k, v in dict(*args, **kwargs).iteritems():
             self[k] = v
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    h = HTTPHeader({"Content-Type":"text/html", "charset":"UTF-8"})
+    h.add("charset", "iso-8859")
+    print(h["charset"])
